@@ -61,6 +61,16 @@ class Loader {
 	}
 	
 	// Classes
+	protected function getName($path){
+		$info = pathinfo($path);
+		
+		$name = array($namespace['name']);
+		if ($info['dirname'] != $path) $name[] = substr($info['dirname'], $length);
+		$name[] = $info['filename'];
+		
+		return strtolower(implode('\\', $name));
+	}
+	
 	protected function getClassList($namespace){
 		$path = $namespace['path'];
 		if (!is_dir($path)) return array();
@@ -69,13 +79,7 @@ class Loader {
 		$list = array();
 		foreach (new ExtensionFilter(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path))) as $file){
 			$realPath = $file->getRealPath();
-			$info = pathinfo($realPath);
-			
-			$name = array($namespace['name']);
-			if ($info['dirname'] != $path) $name[] = substr($info['dirname'], $length);
-			$name[] = $info['filename'];
-			
-			$list[strtolower(implode('\\', $name))] = $realPath;
+			$list[$this->getClassName($realPath)] = $realPath;
 		}
 		
 		return $list;
