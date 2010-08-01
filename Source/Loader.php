@@ -61,14 +61,14 @@ class Loader {
 	}
 	
 	// Classes
-	protected function getName($path){
+	protected function getName($namespace, $path){
 		$info = pathinfo($path);
 		
 		$name = array($namespace['name']);
-		if ($info['dirname'] != $path) $name[] = substr($info['dirname'], $length);
+		if ($info['dirname'] != $path) $name[] = substr($info['dirname'], strlen($path) + 1);
 		$name[] = $info['filename'];
 		
-		return strtolower(implode('\\', $name));
+		return strtolower(str_replace('\\\\', '\\', implode('\\', $name)));
 	}
 	
 	protected function getClassList($namespace){
@@ -79,7 +79,7 @@ class Loader {
 		$list = array();
 		foreach (new ExtensionFilter(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path))) as $file){
 			$realPath = $file->getRealPath();
-			$list[$this->getClassName($realPath)] = $realPath;
+			$list[$this->getName($namespace, $realPath)] = $realPath;
 		}
 		
 		return $list;
@@ -93,8 +93,8 @@ class Loader {
 			$classes = array();
 			foreach ($this->namespaces as $namespace)
 				$classes = array_merge($classes, $this->getClassList($namespace));
-			
-			$this->cache->store($this->name, $classes);
+			print_r($classes);
+			//$this->cache->store($this->name, $classes);
 		}
 		
 		$this->classes = $classes;
