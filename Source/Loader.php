@@ -7,13 +7,18 @@ require_once __DIR__ . '/ExtensionFilter.php';
 class Loader {
 	
 	protected $cache;
+	protected $options = array(
+		'debug' => false,
+	);
 	protected $name;
 	protected $classes = null;
 	protected $namespaces = array();
 	
-	protected function __construct($name, \Cache\Cache $cache){
+	protected function __construct($name, \Cache\Cache $cache, $options = array()){
 		$this->name = 'Loader/' . $name;
 		$this->cache = $cache;
+
+		$this->options = array_merge($this->options, $options);
 	}
 	
 	// Autoloader
@@ -93,18 +98,19 @@ class Loader {
 			$classes = array();
 			foreach ($this->namespaces as $namespace)
 				$classes = array_merge($classes, $this->getClassList($namespace));
-			print_r($classes);
-			//$this->cache->store($this->name, $classes);
+
+			if (!$this->options['debug'])
+				$this->cache->store($this->name, $classes);
 		}
 		
 		$this->classes = $classes;
 	}
 	
 	// Static
-	public static function create($name, \Cache\Cache $cache){
+	public static function create($name, \Cache\Cache $cache, $options = array()){
 		$class = static::getClassName();
 		
-		return new $class($name, $cache);
+		return new $class($name, $cache, $options);
 	}
 	
 	protected static function getClassName(){
