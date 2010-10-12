@@ -6,7 +6,7 @@ any file system checks, should be fast (O(1)).
 
 ### Requirements
 
-* [http://github.com/cpojer/php-cache](php-cache)
+* [php-cache](http://github.com/cpojer/php-cache)
 
 ### Specs
 
